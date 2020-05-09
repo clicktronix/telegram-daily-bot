@@ -1,21 +1,24 @@
-import telebot
-import os
+from os import getenv
+from telebot import types
 from dotenv import load_dotenv
+from telebot import TeleBot
 
 load_dotenv()
 
-token = os.getenv("token", "TOKEN")
-bot = telebot.TeleBot(token)
+token = getenv("token", "TOKEN")
+bot = TeleBot(token)
 
 
-@bot.message_handler(commands=["start", "help"])
+@bot.message_handler(commands=["start"])
 def send_welcome(message):
-    bot.reply_to(message, "Howdy, how are you doing?")
-
-
-@bot.message_handler(content_types=["text"])
-def repeat_all_messages(message):
-    bot.send_message(message.chat.id, message.text)
+    bot.reply_to(
+        message,
+        "Hello, welcome to the easy routine task bot. \
+        We will send simple daily tasks, good luck and \
+        enjoyment in their implementation.",
+    )
+    markup = types.InlineKeyboardMarkup(row_width=2)
+    markup.add(types.InlineKeyboardButton("Get task"))
 
 
 if __name__ == "__main__":
