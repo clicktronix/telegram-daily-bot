@@ -1,3 +1,7 @@
 {
-  "python.pythonPath": "/Users/clicktronix/Projects/telegram-daily-bot/venv/bin/python3"
+  "python.pythonPath": "env/bin/python",
+  "python.linting.enabled": true,
+  "python.linting.pycodestyleEnabled": false,
+  "python.linting.pylintEnabled": true,
+  "python.formatting.provider": "black",
 }
