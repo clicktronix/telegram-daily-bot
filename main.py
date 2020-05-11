@@ -41,8 +41,11 @@ def get_task(message):
     """Sends a message with the task to user"""
     task = str(choice(task_dictionary))
     keyboard = types.InlineKeyboardMarkup()
-    callback_button = types.InlineKeyboardButton(text="Done", callback_data="done")
-    keyboard.add(callback_button)
+    done_button = types.InlineKeyboardButton(text="Done", callback_data="done")
+    get_task_button = types.InlineKeyboardButton(
+        text="Get task", callback_data="get-task"
+    )
+    keyboard.add(done_button, get_task_button)
     bot.send_message(message.chat.id, text=task, reply_markup=keyboard)
 
 
@@ -57,10 +60,10 @@ def task_done(message):
 def get_inline_task_keyboard():
     """Returns inline keyboard"""
     keyboard = types.InlineKeyboardMarkup()
-    send_task_button = types.InlineKeyboardButton(
+    get_task_button = types.InlineKeyboardButton(
         text="Get task", callback_data="get-task"
     )
-    keyboard.add(send_task_button)
+    keyboard.add(get_task_button)
     return keyboard
 
 
