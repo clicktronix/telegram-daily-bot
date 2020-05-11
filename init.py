@@ -1,9 +1,9 @@
+import logging
 from os import getenv
+from random import choice
 from telebot import TeleBot, types, logger
 from dotenv import load_dotenv
 from dictionary import task_dictionary
-from random import choice
-import logging
 
 logger.setLevel(logging.DEBUG)
 load_dotenv()
@@ -14,11 +14,7 @@ bot = TeleBot(token)
 
 @bot.message_handler(commands=["start"])
 def send_welcome(message):
-    keyboard = types.InlineKeyboardMarkup()
-    send_task_button = types.InlineKeyboardButton(
-        text="Get task", callback_data="get-task"
-    )
-    keyboard.add(send_task_button)
+    keyboard = get_inline_task_keyboard()
     bot.send_message(
         message.chat.id,
         "Hello, I will send simple daily tasks for you",
@@ -45,7 +41,19 @@ def get_task(message):
 
 
 def task_done(message):
-    bot.send_message(message.chat.id, "You are awesome")
+    keyboard = get_inline_task_keyboard()
+    bot.send_message(
+        message.chat.id, "You are awesome", reply_markup=keyboard,
+    )
+
+
+def get_inline_task_keyboard():
+    keyboard = types.InlineKeyboardMarkup()
+    send_task_button = types.InlineKeyboardButton(
+        text="Get task", callback_data="get-task"
+    )
+    keyboard.add(send_task_button)
+    return keyboard
 
 
 if __name__ == "__main__":
