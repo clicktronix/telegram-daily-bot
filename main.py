@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""This is the main entry point to the project."""
+"""The main entry point to the project."""
 
 import logging
 from os import getenv
