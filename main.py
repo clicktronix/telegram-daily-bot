@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+"""This is the main entry point to the project."""
+
 import logging
 from os import getenv
 from random import choice
@@ -14,6 +17,7 @@ bot = TeleBot(token)
 
 @bot.message_handler(commands=["start"])
 def send_welcome(message):
+    """Method sends welcome message to user"""
     keyboard = get_inline_task_keyboard()
     bot.send_message(
         message.chat.id,
@@ -24,6 +28,7 @@ def send_welcome(message):
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_handler(call):
+    """Handle callbacks with 'get-task' and 'done' data"""
     if call.data == "get-task":
         get_task(call.message)
     elif call.data == "done":
@@ -33,6 +38,7 @@ def callback_handler(call):
 
 
 def get_task(message):
+    """Sends a message with the task to user"""
     task = str(choice(task_dictionary))
     keyboard = types.InlineKeyboardMarkup()
     callback_button = types.InlineKeyboardButton(text="Done", callback_data="done")
@@ -41,6 +47,7 @@ def get_task(message):
 
 
 def task_done(message):
+    """Sends a complete task message to user"""
     keyboard = get_inline_task_keyboard()
     bot.send_message(
         message.chat.id, "You are awesome", reply_markup=keyboard,
@@ -48,6 +55,7 @@ def task_done(message):
 
 
 def get_inline_task_keyboard():
+    """Returns inline keyboard"""
     keyboard = types.InlineKeyboardMarkup()
     send_task_button = types.InlineKeyboardButton(
         text="Get task", callback_data="get-task"
