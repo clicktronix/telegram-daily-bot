@@ -30,14 +30,14 @@ def send_welcome(message):
 def callback_handler(call):
     """Handle callbacks with 'get-task' and 'done' data"""
     if call.data == "get-task":
-        get_task(call.message)
+        get_task(call.message.chat.id)
     elif call.data == "done":
-        task_done(call.message)
+        task_done(call.message.chat.id)
     else:
         return
 
 
-def get_task(message):
+def get_task(chat_id):
     """Sends a message with the task to user"""
     task = str(choice(task_dictionary))
     keyboard = types.InlineKeyboardMarkup()
@@ -46,14 +46,14 @@ def get_task(message):
         text="Get task", callback_data="get-task"
     )
     keyboard.add(done_button, get_task_button)
-    bot.send_message(message.chat.id, text=task, reply_markup=keyboard)
+    bot.send_message(chat_id, text=task, reply_markup=keyboard)
 
 
-def task_done(message):
+def task_done(chat_id):
     """Sends a complete task message to user"""
     keyboard = get_inline_task_keyboard()
     bot.send_message(
-        message.chat.id, "You are awesome", reply_markup=keyboard,
+        chat_id, "You are awesome", reply_markup=keyboard,
     )
 
 
