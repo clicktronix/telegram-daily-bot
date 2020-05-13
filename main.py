@@ -2,17 +2,16 @@
 """The main entry point to the project."""
 
 import logging
-from os import getenv
 from random import choice
 from telebot import TeleBot, types, logger
 from dotenv import load_dotenv
+from config import Config
+from db import Database
 from dictionary import task_dictionary
 
 logger.setLevel(logging.DEBUG)
 load_dotenv()
-
-token = getenv("token", "TOKEN")
-bot = TeleBot(token)
+bot = TeleBot(Config.TOKEN)
 
 
 @bot.message_handler(commands=["start"])
@@ -24,6 +23,8 @@ def send_welcome(message):
         "Hello, I will send simple daily tasks for you",
         reply_markup=keyboard,
     )
+    db = Database(Config)
+    db.connect()
 
 
 @bot.callback_query_handler(func=lambda call: True)
