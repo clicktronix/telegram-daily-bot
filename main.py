@@ -17,14 +17,15 @@ bot = TeleBot(Config.TOKEN)
 @bot.message_handler(commands=["start"])
 def send_welcome(message):
     """Method sends welcome message to user"""
+    database = Database(Config)
+    database.connect()
     keyboard = get_inline_task_keyboard()
     bot.send_message(
         message.chat.id,
         "Hello, I will send simple daily tasks for you",
         reply_markup=keyboard,
     )
-    db = Database(Config)
-    db.connect()
+    database.update_rows("INSERT INTO chatIds (id) VALUES (%s)", [message.chat.id])
 
 
 @bot.callback_query_handler(func=lambda call: True)

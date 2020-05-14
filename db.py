@@ -25,17 +25,25 @@ class Database:
         if self.conn is None:
             try:
                 self.conn = psycopg2.connect(
-                    dbname="taskbot",
-                    user="clicktronix",
-                    password="23031994",
-                    host="localhost",
-                    port="5432",
+                    dbname=self.dbname,
+                    user=self.username,
+                    password=self.password,
+                    host=self.host,
+                    port=self.port,
                 )
+                self.init_tables()
             except psycopg2.DatabaseError as error:
                 logging.error(error)
                 sys.exit()
             finally:
                 logging.info("Connection to database opened successfully.")
+
+    def init_tables(self):
+        """Tables initializing"""
+        with self.conn.cursor() as cur:
+            cur.execute("CREATE TABLE IF NOT EXISTS chatIds (id integer PRIMARY KEY);")
+        cur.close()
+        return
 
     def select_rows(self, query):
         """Run a SQL query to select rows from table."""
@@ -55,11 +63,10 @@ class Database:
         cur.close()
         return records
 
-    def update_rows(self, query):
+    def update_rows(self, query, args):
         """Run a SQL query to update rows in table."""
         self.connect()
         with self.conn.cursor() as cur:
-            cur.execute(query)
+            cur.execute(query, args)
             self.conn.commit()
             cur.close()
-            return f"{cur.rowcount} rows affected."
