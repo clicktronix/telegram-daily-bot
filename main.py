@@ -12,12 +12,12 @@ from dictionary import task_dictionary
 logger.setLevel(logging.DEBUG)
 load_dotenv()
 bot = TeleBot(Config.TOKEN)
+database = Database(Config)
 
 
 @bot.message_handler(commands=["start"])
 def send_welcome(message):
     """Method sends welcome message to user"""
-    database = Database(Config)
     database.connect()
     keyboard = get_inline_task_keyboard()
     bot.send_message(

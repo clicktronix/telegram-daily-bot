@@ -42,6 +42,9 @@ class Database:
         """Tables initializing"""
         with self.conn.cursor() as cur:
             cur.execute("CREATE TABLE IF NOT EXISTS chatIds (id integer PRIMARY KEY);")
+            cur.execute(
+                "CREATE TABLE IF NOT EXISTS tasks (task varchar(150), done boolean);"
+            )
         cur.close()
         return
 
