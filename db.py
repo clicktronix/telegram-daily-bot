@@ -41,9 +41,13 @@ class Database:
     def init_tables(self):
         """Tables initializing"""
         with self.conn.cursor() as cur:
-            cur.execute("CREATE TABLE IF NOT EXISTS chatIds (id integer PRIMARY KEY);")
             cur.execute(
-                "CREATE TABLE IF NOT EXISTS tasks (task varchar(150), done boolean);"
+                """
+                CREATE TABLE IF NOT EXISTS chat (
+                    id integer PRIMARY KEY,
+                    tasks text[]
+                );
+            """
             )
         cur.close()
         return

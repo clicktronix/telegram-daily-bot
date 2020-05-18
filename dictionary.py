@@ -1,8 +1,8 @@
 """This is a task dictionary"""
 
-task_dictionary = (
-    ("Wash this cup", False),
-    ("Make bed", False),
-    ("Do 10 squats", False),
-    ("Straighten your back", False),
-)
+task_dictionary = [
+    "Wash this cup",
+    "Make bed",
+    "Do 10 squats",
+    "Straighten your back",
+]

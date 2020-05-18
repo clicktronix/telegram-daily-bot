@@ -25,7 +25,10 @@ def send_welcome(message):
         "Hello, I will send simple daily tasks for you",
         reply_markup=keyboard,
     )
-    database.update_rows("INSERT INTO chatIds (id) VALUES (%s)", [message.chat.id])
+    database.update_rows(
+        "INSERT INTO chat (id, tasks) VALUES (%s, %s) ON CONFLICT (id) DO NOTHING",
+        [message.chat.id, task_dictionary],
+    )
 
 
 @bot.callback_query_handler(func=lambda call: True)
