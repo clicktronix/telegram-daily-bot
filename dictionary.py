@@ -4,5 +4,5 @@ task_dictionary = [
     "Wash this cup",
     "Make bed",
     "Do 10 squats",
-    "Straighten your back",
+    "Straighten your back"
 ]
