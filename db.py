@@ -2,7 +2,7 @@
 import sys
 import logging
 import psycopg2
-from psycopg2.extras import DictCursor
+from dictionary import task_dictionary
 
 
 class Database:
@@ -41,29 +41,34 @@ class Database:
     def init_tables(self):
         """Tables initializing"""
         with self.conn.cursor() as cur:
-            cur.execute("CREATE TABLE IF NOT EXISTS chatIds (id integer PRIMARY KEY);")
             cur.execute(
-                "CREATE TABLE IF NOT EXISTS tasks (task varchar(150), done boolean);"
+                """
+                CREATE TABLE IF NOT EXISTS chat (
+                    id integer PRIMARY KEY,
+                    done_task_ids text[]
+                );
+                """
+            )
+            cur.execute(
+                """
+                CREATE TABLE IF NOT EXISTS tasks (
+                    id integer PRIMARY KEY,
+                    task text
+                )
+                INSERT INTO tasks (task) VALUES (%s)
+                """,
+                [task_dictionary],
             )
         cur.close()
         return
 
-    def select_rows(self, query):
+    def select_rows(self, query, args=None):
         """Run a SQL query to select rows from table."""
         self.connect()
         with self.conn.cursor() as cur:
-            cur.execute(query)
+            cur.execute(query, args)
             records = [row for row in cur.fetchall()]
-        cur.close()
-        return records
-
-    def select_rows_dict_cursor(self, query):
-        """Run a SQL query to select rows from table and return dictionaries."""
-        self.connect()
-        with self.conn.cursor(cursor_factory=DictCursor) as cur:
-            cur.execute(query)
-            records = cur.fetchall()
-        cur.close()
+            cur.close()
         return records
 
     def update_rows(self, query, args):
