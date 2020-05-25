@@ -1,1 +1,0 @@
-INSERT INTO chat (id, tasks) VALUES (%s, %s) ON CONFLICT (id) DO NOTHING;
