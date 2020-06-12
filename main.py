@@ -2,13 +2,14 @@
 """The main entry point to the project."""
 
 import logging
-import random
+
+# import random
 from telebot import TeleBot, types, logger
 from dotenv import load_dotenv
 from config import Config
 from db import Database
 
-logger.setLevel(logging.DEBUG)
+# logger.setLevel(logging.DEBUG)
 load_dotenv()
 bot = TeleBot(Config.TOKEN)
 database = Database(Config)
@@ -25,7 +26,7 @@ def send_welcome(message):
         reply_markup=keyboard,
     )
     database.update_rows(
-        "INSERT INTO chat (id) VALUES (%s) ON CONFLICT (id) DO NOTHING;",
+        "INSERT INTO chats (id) VALUES (%s) ON CONFLICT (id) DO NOTHING;",
         [message.chat.id],
     )
 
@@ -43,6 +44,13 @@ def callback_handler(call):
 
 def get_task(chat_id):
     """Sends a message with the task to user"""
+    tasks = database.select_rows(
+        """
+        SELECT *
+            FROM tasks t, chats c
+            WHERE t.id IN c.done_task_ids;
+        """
+    )
     keyboard = types.InlineKeyboardMarkup()
     done_button = types.InlineKeyboardButton(text="Done", callback_data="done")
     get_task_button = types.InlineKeyboardButton(
@@ -50,6 +58,7 @@ def get_task(chat_id):
     )
     keyboard.add(done_button, get_task_button)
     # bot.send_message(chat_id, text=task, reply_markup=keyboard)
+    print(tasks)
 
 
 def task_done(chat_id):
