@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from config import Config
 from db import Database
 
-# logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.DEBUG)
 load_dotenv()
 bot = TeleBot(Config.TOKEN)
 database = Database(Config)
@@ -35,15 +35,37 @@ def send_welcome(message):
 def callback_handler(call):
     """Handle callbacks with 'get-task' and 'done' data"""
     if call.data == "get-task":
-        get_task(call.message.chat.id)
+        send_task(call.message.chat.id)
     elif call.data == "done":
         task_done(call.message.chat.id)
     else:
         return
 
 
-def get_task(chat_id):
+def send_task(chat_id):
     """Sends a message with the task to user"""
+    tasks = get_task(chat_id)
+    if len(tasks) == 0:
+        database.clear_done_ids(chat_id)
+        tasks = get_task(chat_id)
+    task_id, task = random.choice(tasks)
+    database.update_rows(
+        """
+        UPDATE chats SET done_task_ids = array_append(done_task_ids, (%s))
+        """,
+        [task_id],
+    )
+    keyboard = types.InlineKeyboardMarkup()
+    done_button = types.InlineKeyboardButton(text="Done", callback_data="done")
+    get_task_button = types.InlineKeyboardButton(
+        text="Get task", callback_data="get-task"
+    )
+    keyboard.add(done_button, get_task_button)
+    bot.send_message(chat_id, text=task, reply_markup=keyboard)
+
+
+def get_task(chat_id):
+    """Get task from db"""
     done_task_ids = database.select_rows(
         "SELECT chats.done_task_ids FROM chats WHERE chats.id = (%s);", [chat_id]
     )
@@ -52,18 +74,11 @@ def get_task(chat_id):
     else:
         tasks = database.select_rows(
             """
-            SELECT tasks.* FROM tasks WHERE tasks.id NOT IN (%s)
+            SELECT * FROM tasks WHERE NOT (tasks.id = ANY (%s))
             """,
             [done_task_ids[0]],
         )
-    task_id, task = random.choice(tasks)
-    keyboard = types.InlineKeyboardMarkup()
-    done_button = types.InlineKeyboardButton(text="Done", callback_data="done")
-    get_task_button = types.InlineKeyboardButton(
-        text="Get task", callback_data="get-task"
-    )
-    keyboard.add(done_button, get_task_button)
-    bot.send_message(chat_id, text=task, reply_markup=keyboard)
+    return tasks
 
 
 def task_done(chat_id):

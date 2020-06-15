@@ -65,6 +65,20 @@ class Database:
         cur.close()
         return
 
+    def clear_done_ids(self, chat_id):
+        """Clear users done task list"""
+        with self.conn.cursor() as cur:
+            cur.execute(
+                """
+                UPDATE chats
+                SET done_task_ids = null
+                WHERE chats.id = (%s);
+                """,
+                [chat_id],
+            )
+        cur.close()
+        return
+
     def select_rows(self, query, args=None):
         """Run a SQL query to select rows from table."""
         self.connect()
