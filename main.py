@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""The main entry point to the project."""
+"""The main entry point to the project"""
 
 import logging
 
@@ -51,7 +51,7 @@ def send_task(chat_id):
     task_id, task = random.choice(tasks)
     database.update_rows(
         """
-        UPDATE chats SET done_task_ids = array_append(done_task_ids, (%s))
+        UPDATE chats SET done_task_ids = array_append(done_task_ids, (%s));
         """,
         [task_id],
     )
@@ -70,11 +70,11 @@ def get_task(chat_id):
         "SELECT chats.done_task_ids FROM chats WHERE chats.id = (%s);", [chat_id]
     )
     if not all(done_task_ids[0]):
-        tasks = database.select_rows("SELECT * FROM tasks")
+        tasks = database.select_rows("SELECT * FROM tasks;")
     else:
         tasks = database.select_rows(
             """
-            SELECT * FROM tasks WHERE NOT (tasks.id = ANY (%s))
+            SELECT * FROM tasks WHERE NOT (tasks.id = ANY (%s));
             """,
             [done_task_ids[0]],
         )

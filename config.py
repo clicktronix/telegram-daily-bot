@@ -1,4 +1,4 @@
-"""Load config from environment variables."""
+"""Load config from environment variables"""
 from os import environ
 from dotenv import load_dotenv
 
@@ -7,7 +7,7 @@ load_dotenv()
 
 
 class Config:
-    """Global config variables class."""
+    """Global config variables class"""
 
     # App config
     TOKEN = token = environ.get("TOKEN")

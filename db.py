@@ -1,4 +1,4 @@
-"""Connect database."""
+"""Connect database"""
 import sys
 import logging
 import psycopg2
@@ -6,12 +6,12 @@ from dictionary import task_dictionary
 
 
 class Database:
-    """PostgreSQL Database class."""
+    """PostgreSQL Database class"""
 
     def __init__(self, config):
         """
         A database connection that can be safely instantiated once, and then
-        passed around inside a class or between functions.
+        passed around inside a class or between functions
         """
         self.host = config.DATABASE_HOST
         self.username = config.DATABASE_USERNAME
@@ -36,7 +36,7 @@ class Database:
                 logging.error(error)
                 sys.exit()
             finally:
-                logging.info("Connection to database opened successfully.")
+                logging.info("Connection to database opened successfully")
 
     def init_tables(self):
         """Tables initializing"""
@@ -80,7 +80,7 @@ class Database:
         return
 
     def select_rows(self, query, args=None):
-        """Run a SQL query to select rows from table."""
+        """Run a SQL query to select rows from table"""
         self.connect()
         with self.conn.cursor() as cur:
             cur.execute(query, args)
@@ -89,7 +89,7 @@ class Database:
         return records
 
     def update_rows(self, query, args):
-        """Run a SQL query to update rows in table."""
+        """Run a SQL query to update rows in table"""
         self.connect()
         with self.conn.cursor() as cur:
             cur.execute(query, args)
