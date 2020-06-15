@@ -3,7 +3,7 @@
 
 import logging
 
-# import random
+import random
 from telebot import TeleBot, types, logger
 from dotenv import load_dotenv
 from config import Config
@@ -44,21 +44,26 @@ def callback_handler(call):
 
 def get_task(chat_id):
     """Sends a message with the task to user"""
-    tasks = database.select_rows(
-        """
-        SELECT *
-            FROM tasks t, chats c
-            WHERE t.id IN c.done_task_ids;
-        """
+    done_task_ids = database.select_rows(
+        "SELECT chats.done_task_ids FROM chats WHERE chats.id = (%s);", [chat_id]
     )
+    if not all(done_task_ids[0]):
+        tasks = database.select_rows("SELECT * FROM tasks")
+    else:
+        tasks = database.select_rows(
+            """
+            SELECT tasks.* FROM tasks WHERE tasks.id NOT IN (%s)
+            """,
+            [done_task_ids[0]],
+        )
+    task_id, task = random.choice(tasks)
     keyboard = types.InlineKeyboardMarkup()
     done_button = types.InlineKeyboardButton(text="Done", callback_data="done")
     get_task_button = types.InlineKeyboardButton(
         text="Get task", callback_data="get-task"
     )
     keyboard.add(done_button, get_task_button)
-    # bot.send_message(chat_id, text=task, reply_markup=keyboard)
-    print(tasks)
+    bot.send_message(chat_id, text=task, reply_markup=keyboard)
 
 
 def task_done(chat_id):
