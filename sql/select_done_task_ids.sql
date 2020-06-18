@@ -1,0 +1,1 @@
+SELECT chats.done_task_ids FROM chats WHERE chats.id = (%s);

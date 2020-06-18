@@ -1,0 +1,1 @@
+INSERT INTO chats (id) VALUES (%s) ON CONFLICT (id) DO NOTHING;
