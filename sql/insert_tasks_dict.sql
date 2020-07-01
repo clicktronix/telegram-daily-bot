@@ -1,0 +1,1 @@
+INSERT INTO tasks (id, task) VALUES (%s, %s) ON CONFLICT (id) DO NOTHING;

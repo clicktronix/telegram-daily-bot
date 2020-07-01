@@ -1,0 +1,1 @@
+UPDATE chats SET done_task_ids = array_append(done_task_ids, (%s));

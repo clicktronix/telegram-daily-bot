@@ -47,7 +47,7 @@ def send_task(chat_id):
     tasks = get_task(chat_id)
     if len(tasks) == 0:
         database.clear_done_ids(chat_id)
-        tasks = get_task(chat_id)
+        tasks = database.select_rows("SELECT * FROM tasks;")
     task_id, task = random.choice(tasks)
     database.update_rows(
         """

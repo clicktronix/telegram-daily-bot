@@ -1,0 +1,1 @@
+SELECT * FROM tasks WHERE NOT (tasks.id = ANY (%s));
