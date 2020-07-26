@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 """The main entry point to the project"""
 
-import logging
+# import logging
 
 import random
-from telebot import TeleBot, types, logger
+from telebot import TeleBot, types
 from dotenv import load_dotenv
 from config import Config
 from db import Database
 
-logger.setLevel(logging.DEBUG)
+# logger.setLevel(logging.DEBUG)
 load_dotenv()
 bot = TeleBot(Config.TOKEN)
 database = Database(Config)

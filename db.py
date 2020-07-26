@@ -1,6 +1,7 @@
 """Connect database"""
 import sys
 import logging
+import os
 import psycopg2
 from dictionary import task_dictionary
 
@@ -19,6 +20,11 @@ class Database:
         self.port = config.DATABASE_PORT
         self.dbname = config.DATABASE_NAME
         self.conn = None
+        self.commands = {}
+
+        with os.scandir("sql/") as entries:
+            for entry in entries:
+                self.commands[entry.name] = open(entry).read()
 
     def connect(self):
         """Connect to a postgres database"""
