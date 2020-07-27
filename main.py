@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 """The main entry point to the project"""
 
-# import logging
+import logging
 
 import random
-from telebot import TeleBot, types
+from telebot import TeleBot, types, logger
 from dotenv import load_dotenv
 from config import Config
 from db import Database
 
-# logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.DEBUG)
 load_dotenv()
 bot = TeleBot(Config.TOKEN)
 database = Database(Config)
@@ -26,8 +26,7 @@ def send_welcome(message):
         reply_markup=keyboard,
     )
     database.update_rows(
-        "INSERT INTO chats (id) VALUES (%s) ON CONFLICT (id) DO NOTHING;",
-        [message.chat.id],
+        database.commands["insert_chat"], [message.chat.id],
     )
 
 
@@ -47,13 +46,10 @@ def send_task(chat_id):
     tasks = get_task(chat_id)
     if len(tasks) == 0:
         database.clear_done_ids(chat_id)
-        tasks = database.select_rows("SELECT * FROM tasks;")
+        tasks = database.select_rows(database.commands["select_tasks"])
     task_id, task = random.choice(tasks)
     database.update_rows(
-        """
-        UPDATE chats SET done_task_ids = array_append(done_task_ids, (%s));
-        """,
-        [task_id],
+        database.commands["insert_done_ids"], [task_id],
     )
     keyboard = types.InlineKeyboardMarkup()
     done_button = types.InlineKeyboardButton(text="Done", callback_data="done")
@@ -67,16 +63,13 @@ def send_task(chat_id):
 def get_task(chat_id):
     """Get task from db"""
     done_task_ids = database.select_rows(
-        "SELECT chats.done_task_ids FROM chats WHERE chats.id = (%s);", [chat_id]
+        database.commands["select_done_tasks_ids"], [chat_id]
     )
     if not all(done_task_ids[0]):
-        tasks = database.select_rows("SELECT * FROM tasks;")
+        tasks = database.select_rows(database.commands["select_tasks"])
     else:
         tasks = database.select_rows(
-            """
-            SELECT * FROM tasks WHERE NOT (tasks.id = ANY (%s));
-            """,
-            [done_task_ids[0]],
+            database.commands["filter_tasks"], [done_task_ids[0]],
         )
     return tasks
 
