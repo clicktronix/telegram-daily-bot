@@ -1,6 +1,7 @@
 """Connect database"""
 import sys
 import logging
+import os
 import psycopg2
 from dictionary import task_dictionary
 
@@ -19,6 +20,13 @@ class Database:
         self.port = config.DATABASE_PORT
         self.dbname = config.DATABASE_NAME
         self.conn = None
+        self.commands = {}
+
+        with os.scandir("sql/") as entries:
+            for entry in entries:
+                self.commands[os.path.splitext(entry.name)[0]] = open(entry).read()
+
+        print(self.commands['select_done_task_ids'])
 
     def connect(self):
         """Connect to a postgres database"""
@@ -41,26 +49,11 @@ class Database:
     def init_tables(self):
         """Tables initializing"""
         with self.conn.cursor() as cur:
-            cur.execute(
-                """
-                CREATE TABLE IF NOT EXISTS chats (
-                    id int PRIMARY KEY,
-                    done_task_ids int[]
-                );
-                """
-            )
-            cur.execute(
-                """
-                CREATE TABLE IF NOT EXISTS tasks (
-                    id int PRIMARY KEY,
-                    task text
-                );
-                """
-            )
+            cur.execute(self.commands['create_chats_table'])
+            cur.execute(self.commands['create_tasks_table'])
             for index, task in enumerate(task_dictionary):
                 cur.execute(
-                    "INSERT INTO tasks (id, task) VALUES (%s, %s) ON CONFLICT (id) DO NOTHING;",
-                    [index, task],
+                    self.commands['insert_tasks_dict'], [index, task],
                 )
         cur.close()
         return
@@ -69,12 +62,7 @@ class Database:
         """Clear users done task list"""
         with self.conn.cursor() as cur:
             cur.execute(
-                """
-                UPDATE chats
-                SET done_task_ids = null
-                WHERE chats.id = (%s);
-                """,
-                [chat_id],
+                self.commands['clear_done_ids'], [chat_id],
             )
         cur.close()
         return
