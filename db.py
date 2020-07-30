@@ -26,8 +26,6 @@ class Database:
             for entry in entries:
                 self.commands[os.path.splitext(entry.name)[0]] = open(entry).read()
 
-        print(self.commands['select_done_task_ids'])
-
     def connect(self):
         """Connect to a postgres database"""
         if self.conn is None:
@@ -49,11 +47,11 @@ class Database:
     def init_tables(self):
         """Tables initializing"""
         with self.conn.cursor() as cur:
-            cur.execute(self.commands['create_chats_table'])
-            cur.execute(self.commands['create_tasks_table'])
+            cur.execute(self.commands["create_chats_table"])
+            cur.execute(self.commands["create_tasks_table"])
             for index, task in enumerate(task_dictionary):
                 cur.execute(
-                    self.commands['insert_tasks_dict'], [index, task],
+                    self.commands["insert_tasks_dict"], [index, task],
                 )
         cur.close()
         return
@@ -62,7 +60,7 @@ class Database:
         """Clear users done task list"""
         with self.conn.cursor() as cur:
             cur.execute(
-                self.commands['clear_done_ids'], [chat_id],
+                self.commands["clear_done_ids"], [chat_id],
             )
         cur.close()
         return
