@@ -42,10 +42,7 @@ def callback_handler(call):
 
 def send_task(chat_id):
     """Sends a message with the task to user"""
-    tasks = get_task(chat_id)
-    if len(tasks) == 0:
-        database.clear_done_ids(chat_id)
-        tasks = database.select_rows(database.commands["select_tasks"])
+    tasks = get_tasks(chat_id)
     task_id, task = random.choice(tasks)
     database.update_rows(
         database.commands["insert_done_id"], [task_id],
@@ -59,7 +56,7 @@ def send_task(chat_id):
     bot.send_message(chat_id, text=task, reply_markup=keyboard)
 
 
-def get_task(chat_id):
+def get_tasks(chat_id):
     """Get task from db"""
     done_task_ids = database.select_rows(
         database.commands["select_done_task_ids"], [chat_id]
@@ -70,6 +67,9 @@ def get_task(chat_id):
         tasks = database.select_rows(
             database.commands["filter_tasks"], [done_task_ids[0]],
         )
+    if len(tasks) == 0:
+        database.clear_done_ids(chat_id)
+        tasks = database.select_rows(database.commands["select_tasks"])
     return tasks
 
 
