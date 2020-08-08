@@ -4,29 +4,24 @@
 import logging
 import random
 from telebot import TeleBot, types, logger
-from dotenv import load_dotenv
 from config import Config
-from db import Database
+from task_manager import TaskManager
 
 logger.setLevel(logging.DEBUG)
-load_dotenv()
 bot = TeleBot(Config.TOKEN)
-database = Database(Config)
+taskManager = TaskManager()
 
 
 @bot.message_handler(commands=["start"])
 def send_welcome(message):
     """Method sends welcome message to user"""
-    database.connect()
     keyboard = get_inline_task_keyboard()
     bot.send_message(
         message.chat.id,
         "Hello, I will send simple daily tasks for you",
         reply_markup=keyboard,
     )
-    database.update_rows(
-        database.commands["insert_chat"], [message.chat.id],
-    )
+    taskManager.insert_chat(message.chat.id)
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -42,14 +37,9 @@ def callback_handler(call):
 
 def send_task(chat_id):
     """Sends a message with the task to user"""
-    tasks = get_task(chat_id)
-    if len(tasks) == 0:
-        database.clear_done_ids(chat_id)
-        tasks = database.select_rows(database.commands["select_tasks"])
+    tasks = taskManager.get_tasks(chat_id)
     task_id, task = random.choice(tasks)
-    database.update_rows(
-        database.commands["insert_done_id"], [task_id],
-    )
+    taskManager.insert_done_id(task_id)
     keyboard = types.InlineKeyboardMarkup()
     done_button = types.InlineKeyboardButton(text="Done", callback_data="done")
     get_task_button = types.InlineKeyboardButton(
@@ -57,20 +47,6 @@ def send_task(chat_id):
     )
     keyboard.add(done_button, get_task_button)
     bot.send_message(chat_id, text=task, reply_markup=keyboard)
-
-
-def get_task(chat_id):
-    """Get task from db"""
-    done_task_ids = database.select_rows(
-        database.commands["select_done_task_ids"], [chat_id]
-    )
-    if not all(done_task_ids[0]):
-        tasks = database.select_rows(database.commands["select_tasks"])
-    else:
-        tasks = database.select_rows(
-            database.commands["filter_tasks"], [done_task_ids[0]],
-        )
-    return tasks
 
 
 def task_done(chat_id):

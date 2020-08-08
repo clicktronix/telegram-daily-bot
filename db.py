@@ -54,7 +54,6 @@ class Database:
                     self.commands["insert_tasks_dict"], [index, task],
                 )
         cur.close()
-        return
 
     def clear_done_ids(self, chat_id):
         """Clear users done task list"""
@@ -63,7 +62,6 @@ class Database:
                 self.commands["clear_done_ids"], [chat_id],
             )
         cur.close()
-        return
 
     def select_rows(self, query, args=None):
         """Run a SQL query to select rows from table"""
