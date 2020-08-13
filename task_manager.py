@@ -10,14 +10,14 @@ class TaskManager:
         self.database = Database(Config)
         self.database.connect()
 
-    def insert_chat(self, chat_id):
-        """Insert chat to db by id"""
+    def insert_chat_id(self, chat_id):
+        """Insert chat id to db"""
         self.database.update_rows(
-            self.database.commands["insert_chat"], [chat_id],
+            self.database.commands["insert_chat_id"], [chat_id],
         )
 
     def get_tasks(self, chat_id):
-        """Get task from db"""
+        """Get a list of uncompleted tasks"""
         done_task_ids = self.database.select_rows(
             self.database.commands["select_done_task_ids"], [chat_id]
         )
@@ -32,8 +32,8 @@ class TaskManager:
             tasks = self.database.select_rows(self.database.commands["select_tasks"])
         return tasks
 
-    def insert_done_id(self, task_id):
-        """Insert done task ids to db"""
+    def insert_done_task_id(self, task_id):
+        """Add the id of the completed task to the db"""
         self.database.update_rows(
-            self.database.commands["insert_done_id"], [task_id],
+            self.database.commands["insert_done_task_id"], [task_id],
         )
