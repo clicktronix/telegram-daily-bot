@@ -39,7 +39,7 @@ def send_task(chat_id):
     """Sends a message with the task to user"""
     tasks = taskManager.get_tasks(chat_id)
     task_id, task = random.choice(tasks)
-    taskManager.insert_done_task_id(task_id)
+    taskManager.update_done_task_id(task_id)
     keyboard = types.InlineKeyboardMarkup()
     done_button = types.InlineKeyboardButton(text="Done", callback_data="done")
     get_task_button = types.InlineKeyboardButton(

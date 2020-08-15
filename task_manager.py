@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """Task manager"""
 from db import Database
 from config import Config
@@ -32,8 +33,8 @@ class TaskManager:
             tasks = self.database.select_rows(self.database.commands["select_tasks"])
         return tasks
 
-    def insert_done_task_id(self, task_id):
+    def update_done_task_id(self, task_id):
         """Add the id of the completed task to the db"""
         self.database.update_rows(
-            self.database.commands["insert_done_task_id"], [task_id],
+            self.database.commands["update_done_task_id"], [task_id],
         )
