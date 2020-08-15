@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """Load config from environment variables"""
 from os import environ
 from dotenv import load_dotenv

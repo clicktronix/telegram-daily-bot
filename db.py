@@ -1,4 +1,5 @@
-"""Connect database"""
+#!/usr/bin/env python
+"""Database management class"""
 import sys
 import logging
 import os

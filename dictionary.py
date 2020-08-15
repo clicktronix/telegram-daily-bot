@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """This is a task dictionary"""
 
 task_dictionary = [
