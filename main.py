@@ -3,34 +3,33 @@
 
 import logging
 import random
-from telebot import TeleBot, types, logger
+from aiogram import Bot, Dispatcher, executor, types
 from config import Config
 from task_manager import TaskManager
 
-logger.setLevel(logging.DEBUG)
-bot = TeleBot(Config.TOKEN)
+logging.basicConfig(level=logging.INFO)
+bot = Bot(token=Config.TOKEN)
+dp = Dispatcher(bot)
 taskManager = TaskManager()
 
 
-@bot.message_handler(commands=["start"])
-def send_welcome(message):
+@dp.message_handler(commands=["start"])
+async def send_welcome(message: types.Message):
     """Method sends welcome message to user"""
     keyboard = get_inline_task_keyboard()
-    bot.send_message(
-        message.chat.id,
-        "Hello, I will send simple daily tasks for you",
-        reply_markup=keyboard,
+    await bot.send_message(
+        message.chat.id, "Hello, I will send simple daily tasks for you",
     )
     taskManager.insert_chat_id(message.chat.id)
 
 
-@bot.callback_query_handler(func=lambda call: True)
-def callback_handler(call):
+@dp.callback_query_handler(func=lambda call: True)
+async def callback_handler(callback: types.CallbackQuery):
     """Handle callbacks with 'get-task' and 'done' data"""
-    if call.data == "get-task":
-        send_task(call.message.chat.id)
-    elif call.data == "done":
-        task_done(call.message.chat.id)
+    if callback.data == "get-task":
+        send_task(callback.message.chat.id)
+    elif callback.data == "done":
+        task_done(callback.message.chat.id)
     else:
         return
 
@@ -68,4 +67,4 @@ def get_inline_task_keyboard():
 
 
 if __name__ == "__main__":
-    bot.polling()
+    executor.start_polling(dp, skip_updates=True)
