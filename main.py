@@ -18,18 +18,20 @@ async def send_welcome(message: types.Message):
     """Method sends welcome message to user"""
     keyboard = get_inline_task_keyboard()
     await bot.send_message(
-        message.chat.id, "Hello, I will send simple daily tasks for you",
+        message.chat.id,
+        "Hello, I will send simple daily tasks for you",
+        reply_markup=keyboard,
     )
     taskManager.insert_chat_id(message.chat.id)
 
 
-@dp.callback_query_handler(func=lambda call: True)
-async def callback_handler(callback: types.CallbackQuery):
+@dp.callback_query_handler(lambda query: True)
+def callback_handler(query: types.CallbackQuery):
     """Handle callbacks with 'get-task' and 'done' data"""
-    if callback.data == "get-task":
-        send_task(callback.message.chat.id)
-    elif callback.data == "done":
-        task_done(callback.message.chat.id)
+    if query.data == "get-task":
+        send_task(query.message.chat.id)
+    elif query.data == "done":
+        task_done(query.message.chat.id)
     else:
         return
 
@@ -58,7 +60,7 @@ def task_done(chat_id):
 
 def get_inline_task_keyboard():
     """Returns inline keyboard"""
-    keyboard = types.InlineKeyboardMarkup()
+    keyboard = types.InlineKeyboardMarkup(row_width=4)
     get_task_button = types.InlineKeyboardButton(
         text="Get task", callback_data="get-task"
     )
