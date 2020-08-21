@@ -26,17 +26,17 @@ async def send_welcome(message: types.Message):
 
 
 @dp.callback_query_handler(lambda query: True)
-def callback_handler(query: types.CallbackQuery):
+async def callback_handler(query: types.CallbackQuery):
     """Handle callbacks with 'get-task' and 'done' data"""
     if query.data == "get-task":
-        send_task(query.message.chat.id)
+        await send_task(query.message.chat.id)
     elif query.data == "done":
-        task_done(query.message.chat.id)
+        await task_done(query.message.chat.id)
     else:
         return
 
 
-def send_task(chat_id):
+async def send_task(chat_id):
     """Sends a message with the task to user"""
     tasks = taskManager.get_tasks(chat_id)
     task_id, task = random.choice(tasks)
@@ -47,13 +47,13 @@ def send_task(chat_id):
         text="Get task", callback_data="get-task"
     )
     keyboard.add(done_button, get_task_button)
-    bot.send_message(chat_id, text=task, reply_markup=keyboard)
+    await bot.send_message(chat_id, text=task, reply_markup=keyboard)
 
 
-def task_done(chat_id):
+async def task_done(chat_id):
     """Sends a complete task message to user"""
     keyboard = get_inline_task_keyboard()
-    bot.send_message(
+    await bot.send_message(
         chat_id, "You are awesome", reply_markup=keyboard,
     )
 
