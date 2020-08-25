@@ -41,7 +41,7 @@ async def send_task(chat_id):
     tasks = taskManager.get_tasks(chat_id)
     task_id, task = random.choice(tasks)
     taskManager.update_done_task_id(task_id)
-    keyboard = types.InlineKeyboardMarkup()
+    keyboard = types.InlineKeyboardMarkup(row_width=2)
     done_button = types.InlineKeyboardButton(text="Done", callback_data="done")
     get_task_button = types.InlineKeyboardButton(
         text="Get task", callback_data="get-task"
@@ -54,13 +54,13 @@ async def task_done(chat_id):
     """Sends a complete task message to user"""
     keyboard = get_inline_task_keyboard()
     await bot.send_message(
-        chat_id, "You are awesome", reply_markup=keyboard,
+        chat_id, "You are awesome. Do you want a new task?", reply_markup=keyboard,
     )
 
 
 def get_inline_task_keyboard():
     """Returns inline keyboard"""
-    keyboard = types.InlineKeyboardMarkup(row_width=4)
+    keyboard = types.InlineKeyboardMarkup(row_width=2)
     get_task_button = types.InlineKeyboardButton(
         text="Get task", callback_data="get-task"
     )
